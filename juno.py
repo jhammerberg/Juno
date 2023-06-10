@@ -46,4 +46,11 @@ async def clear_chat(interaction):
     previous_msgs = [{"role": "system", "content": system_prompt}] 
     await interaction.response.send_message("Chat History Cleared")
 
+@commands.command(name= "give_role", description= "Gives a specific role to whoever uses it.")
+async def give_role(interaction: discord.Interaction, name: str):
+    server = client.get_guild(interaction.channel.guild.id)
+    role = discord.utils.get(server.roles, name=name)
+    await interaction.user.add_roles(role)
+    await interaction.response.send_message("Role Added")
+
 client.run(token)
