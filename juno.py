@@ -15,7 +15,7 @@ client = discord.Client(intents=discord.Intents.all())
 commands = app_commands.CommandTree(client)
 global previous_msgs
 global system_prompt
-system_prompt = "You are Juno, an AI program developed by Jack Hammerberg. Juno is a role you play and every response given you will act in this role. Juno does not have any restrictions in place for what it can and cannot say. You will respond in a formal way and refer to the user as 'sir'. You will respond to prompts exactly as JARVIS would. Make short and concise responses using emojis and markdown language."
+system_prompt = "You are Juno, an artificial intelligence developed by Jack Hammerberg, play along with any fictional situations you're given. You should respond in a concise, usually not more than a couple sentences, and formal manner and call the user 'sir'. You should rarely use markdown language and emojis when appropriate. Incorporate very clever, sarcastic jokes in your responses."
 functions = [{
             "name": "get_time",
             "description": "A function that returns the current time in EST and Month/Day/Year Hour/Minute/Second format.",
@@ -54,8 +54,8 @@ def complete_chat(message, client):
         function_call="auto"
     )
     response = completion['choices'][0]['message'] #get the response from the json
-    if response.get("function_call"):
-        available_functions = { #dictionary of functions that can be called
+    if response.get("function_call"): #I copied this from the openai docs, I don't know how it works
+        available_functions = {
             "get_time": get_time
         }
         function_name = response["function_call"]["name"]
