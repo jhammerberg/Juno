@@ -3,6 +3,7 @@ import discord
 from discord import app_commands
 import openai
 import pytz
+import re
 import json
 with open('config.json', 'r') as f:
     config = json.load(f)
@@ -30,6 +31,10 @@ functions = [{
         }]
 previous_msgs = [{"role": "system", "content": system_prompt}] 
 
+def sanitize_username(username): #openai needs the username to fit a certain format 
+    sanitized = re.sub(r"[^a-zA-Z0-9_-]", "", username)
+    return sanitized[:64]
+
 def get_time(timezone):
     #get current time in said timezone
     time = {
@@ -41,7 +46,7 @@ def get_time(timezone):
 
 def complete_chat(message, client):
     global previous_msgs
-    previous_msgs.append({"role": "user", "content": "Message from " + client + ": " + message})
+    previous_msgs.append({"role": "user", "name": sanitize_username(client), "content": message})
     completion = openai.ChatCompletion.create(
         model="gpt-4",
         messages=previous_msgs,
