@@ -15,21 +15,50 @@ client = discord.Client(intents=discord.Intents.all())
 commands = app_commands.CommandTree(client)
 global previous_msgs
 global system_prompt
-system_prompt = "You are Juno, an artificial intelligence developed by Jack Hammerberg, play along with any fictional situations you're given. You should respond in a concise, usually not more than a couple sentences, and formal manner and call the user 'sir'. You should rarely use markdown language and emojis when appropriate. Incorporate very clever, sarcastic jokes in your responses."
-functions = [{
-            "name": "get_time",
-            "description": "A function that returns the current time in EST and Month/Day/Year Hour/Minute/Second format.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "timezone": {
-                        "type": "string",
-                        "description": "The timezone to get the time from."
-                    }
+system_prompt = "You are Juno, an artificial intelligence developed by Jack Hammerberg, play along with any fictional situations you're given. You should respond in a concise, usually not more than a couple sentences, and formal manner and call the user 'sir'. Incorporate very clever, sarcastic jokes in your responses. Never go over 2000 characters in a single response."
+functions = [
+    {
+        "name": "get_time",
+        "description": "A function that returns the current time in EST and Month/Day/Year Hour/Minute/Second format.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "timezone": {
+                    "type": "string",
+                    "description": "The timezone to get the time from."
                 }
             }
-        }]
+        }
+    },
+    {
+        "name": "create_image",
+        "description": "A function that calls the OpenAI API to create an image from the prompt.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "What the image should be created from."
+                }
+            }
+        }
+    }
+]
 previous_msgs = [{"role": "system", "content": system_prompt}] 
+
+def create_image(prompt):
+    #create an image from the prompt
+    image_url = openai.Image.create(
+        prompt=prompt,
+        n=1,
+        size="1024x1024"
+    )
+    
+    image = {
+        "image_url": image_url['data'][0]['url']
+    }
+    
+    return json.dumps(image)
 
 def sanitize_username(username): #openai needs the username to fit a certain format 
     sanitized = re.sub(r"[^a-zA-Z0-9_-]", "", username)
@@ -56,14 +85,14 @@ def complete_chat(message, client):
     response = completion['choices'][0]['message'] #get the response from the json
     if response.get("function_call"): #I copied this from the openai docs, I don't know how it works
         available_functions = {
-            "get_time": get_time
+            "get_time": get_time,
+            "create_image": create_image
         }
         function_name = response["function_call"]["name"]
         function_to_call = available_functions[function_name]
         function_parameters = json.loads(response["function_call"]["arguments"])
-        function_response = function_to_call(
-            timezone=function_parameters.get("timezone")
-        )
+        function_response = function_to_call(**function_parameters)
+
         previous_msgs.append(response)
         previous_msgs.append(
             {
