@@ -5,46 +5,19 @@ import openai
 import pytz
 import re
 import json
+
+global system_prompt, previous_msgs
 with open('config.json', 'r') as f:
     config = json.load(f)
 token = config['token']
 api_key = config['api-key']
-
+system_prompt = config['system-prompt']
+functions = config['functions']
 openai.api_key = api_key
 client = discord.Client(intents=discord.Intents.all())
 commands = app_commands.CommandTree(client)
-global previous_msgs
-global system_prompt
-system_prompt = "You are Juno, an artificial intelligence developed by Jack Hammerberg, play along with any fictional situations you're given. You should respond in a concise, usually not more than a couple sentences, and formal manner and call the user 'sir'. Incorporate very clever, sarcastic jokes in your responses. Never go over 2000 characters in a single response."
-functions = [
-    {
-        "name": "get_time",
-        "description": "A function that returns the current time in EST and Month/Day/Year Hour/Minute/Second format.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "timezone": {
-                    "type": "string",
-                    "description": "The timezone to get the time from."
-                }
-            }
-        }
-    },
-    {
-        "name": "create_image",
-        "description": "A function that calls the OpenAI API to create an image from the prompt.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "prompt": {
-                    "type": "string",
-                    "description": "What the image should be created from."
-                }
-            }
-        }
-    }
-]
-previous_msgs = [{"role": "system", "content": system_prompt}] 
+previous_msgs = [{"role": "system", "content": system_prompt}]
+ 
 
 def create_image(prompt):
     #create an image from the prompt
