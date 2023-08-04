@@ -15,7 +15,7 @@ system_prompt = config['system-prompt']
 functions = config['functions']
 
 if not os.path.isfile('.env'): # Check if there's a .env file and throw an error if there isn't
-    print("\033[91mERROR: No .env file found. Please create one with the required keys.\033[0m")
+    print("\033[91mERROR: No .env file found. Please create one with the keys 'DISCORD_KEY' and 'OPENAI_KEY'.\033[0m")
     exit()
 load_dotenv()
 discord_key = os.environ.get("DISCORD_KEY")
@@ -116,4 +116,5 @@ async def give_role(interaction: discord.Interaction, name: str):
     await interaction.user.add_roles(role)
     await interaction.response.send_message("Role Added")
 
-client.run(discord_key)
+if __name__ == "__main__":
+    client.run(discord_key)

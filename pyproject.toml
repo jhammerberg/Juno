@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "my_package"
+authors = [
+    {name = "Jack Hammerberg", email = "jackmh@umich.edu"},
+]
+description = "A Discord bot that uses OpenAI to respond to keywords. "
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = ["discord", "discord-bot", "openai", "discord-py"]
+license = {text = "MIT-License"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "discord",
+    "openai",
+    "python-dotenv",
+    "pytz",
+    "re",
+    'importlib-metadata; python_version<"3.8"',
+]
+dynamic = ["version"]
