@@ -1,6 +1,8 @@
 from datetime import datetime
+import time
 import discord
 from discord import app_commands
+import requests
 import openai
 import pytz
 import re
@@ -9,12 +11,12 @@ from dotenv import load_dotenv
 import os
 
 global system_prompt, previous_msgs
-with open('config.json', 'r') as f:
+with open("config.json", "r") as f:
     config = json.load(f)
-system_prompt = config['system-prompt']
-functions = config['functions']
+system_prompt = config["system-prompt"]
+functions = config["functions"]
 
-if not os.path.isfile('.env'): # Check if there's a .env file and throw an error if there isn't
+if not os.path.isfile(".env"): # Check if there's a .env file and throw an error if there isn't
     print("\033[91mERROR: No .env file found. Please create one with the keys 'DISCORD_KEY' and 'OPENAI_KEY'.\033[0m")
     exit()
 load_dotenv()
@@ -25,6 +27,15 @@ openai.api_key = openai_key
 client = discord.Client(intents=discord.Intents.all())
 commands = app_commands.CommandTree(client)
 previous_msgs = [{"role": "system", "content": system_prompt}]
+
+def check_for_updates():
+    print("Checking for updates...")
+    url = config["github-repo"]
+    response = requests.get("https://raw.githubusercontent.com/" + url + "/master/config.json")
+    data = json.loads(response.text)
+    current_version = data.get("version", None)
+    if current_version != config["version"]:
+        os.system("python -m pip install --upgrade git+https://www.github.com/" + config["github-repo"] + ".git")
 
 def create_image(prompt):
     #create an image from the prompt
@@ -117,4 +128,5 @@ async def give_role(interaction: discord.Interaction, name: str):
     await interaction.response.send_message("Role Added")
 
 if __name__ == "__main__":
+    check_for_updates()
     client.run(discord_key)
