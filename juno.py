@@ -5,19 +5,26 @@ import openai
 import pytz
 import re
 import json
+from dotenv import load_dotenv
+import os
 
 global system_prompt, previous_msgs
 with open('config.json', 'r') as f:
     config = json.load(f)
-token = config['token']
-api_key = config['api-key']
 system_prompt = config['system-prompt']
 functions = config['functions']
-openai.api_key = api_key
+
+if not os.path.isfile('.env'): # Check if there's a .env file and throw an error if there isn't
+    print("\033[91mERROR: No .env file found. Please create one with the required keys.\033[0m")
+    exit()
+load_dotenv()
+discord_key = os.environ.get("DISCORD_KEY")
+openai_key = os.environ.get("OPENAI_KEY")
+
+openai.api_key = openai_key
 client = discord.Client(intents=discord.Intents.all())
 commands = app_commands.CommandTree(client)
 previous_msgs = [{"role": "system", "content": system_prompt}]
- 
 
 def create_image(prompt):
     #create an image from the prompt
@@ -109,4 +116,4 @@ async def give_role(interaction: discord.Interaction, name: str):
     await interaction.user.add_roles(role)
     await interaction.response.send_message("Role Added")
 
-client.run(token)
+client.run(discord_key)
