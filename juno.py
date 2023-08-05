@@ -2,7 +2,6 @@ from datetime import datetime
 import time
 import discord
 from discord import app_commands
-import requests
 import openai
 import pytz
 import re
@@ -27,15 +26,6 @@ openai.api_key = openai_key
 client = discord.Client(intents=discord.Intents.all())
 commands = app_commands.CommandTree(client)
 previous_msgs = [{"role": "system", "content": system_prompt}]
-
-def check_for_updates():
-    print("Checking for updates...")
-    url = config["github-repo"]
-    response = requests.get("https://raw.githubusercontent.com/" + url + "/master/config.json")
-    data = json.loads(response.text)
-    current_version = data.get("version", None)
-    if current_version != config["version"]:
-        os.system("git pull")
 
 def create_image(prompt):
     #create an image from the prompt
@@ -128,5 +118,5 @@ async def give_role(interaction: discord.Interaction, name: str):
     await interaction.response.send_message("Role Added")
 
 if __name__ == "__main__":
-    check_for_updates()
+    os.system("git pull")
     client.run(discord_key)
