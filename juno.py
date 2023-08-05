@@ -35,7 +35,7 @@ def check_for_updates():
     data = json.loads(response.text)
     current_version = data.get("version", None)
     if current_version != config["version"]:
-        os.system("python -m pip install --upgrade git+https://www.github.com/" + config["github-repo"] + ".git")
+        os.system("git pull")
 
 def create_image(prompt):
     #create an image from the prompt
