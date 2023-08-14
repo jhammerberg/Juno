@@ -1,12 +1,14 @@
-from datetime import datetime
+import asyncio
 import time
-import discord
+from bs4 import BeautifulSoup
 from discord import app_commands
+from dotenv import load_dotenv
+from datetime import datetime
+import discord
 import openai
 import pytz
-import re
 import json
-from dotenv import load_dotenv
+import re
 import os
 
 global system_prompt, previous_msgs
@@ -61,9 +63,12 @@ def complete_chat(message, client):
         model="gpt-4",
         messages=previous_msgs,
         functions=functions,
-        function_call="auto"
+        function_call="auto",
+        stream=True
     )
-    response = completion['choices'][0]['message'] #get the response from the json
+    
+    response = next(completion).choices[0].delta #get the response from the json
+    #print(json.dumps(next(completion)))
     if response.get("function_call"): #I copied this from the openai docs, I don't know how it works
         available_functions = {
             "get_time": get_time,
@@ -85,14 +90,15 @@ def complete_chat(message, client):
         second_completion = openai.ChatCompletion.create(
             model="gpt-4",
             messages=previous_msgs,
+            stream=True
         )
-        return second_completion['choices'][0]['message']['content']
-    return response['content'] #return the message inside the json
+        return second_completion
+    return completion
     
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
-    await client.change_presence(activity=discord.Game(name="around"))
+    await client.change_presence(activity=discord.Game(name="GPT-4"))
     await commands.sync()
 
 @client.event
@@ -102,7 +108,18 @@ async def on_message(message):
 
     if 'juno' in message.content.lower():
         async with message.channel.typing(): #gives a typing indicator while the response is being generated
-            await message.channel.send(complete_chat(message.content, str(message.author)))
+            completion_object = complete_chat(message.content, str(message.author))
+            message_string = ""
+            bots_message = await message.channel.send("...") #Send a message to edit later
+            i = 0
+            for chunk in completion_object:
+                i=i+1 #using 'i' cause you can't use chunk since it's an "openaiobject" not an index
+                if "content" in chunk.choices[0].delta:
+                    message_string = message_string + chunk.choices[0].delta["content"]
+                else:
+                    return
+                if message_string != "" and i%10==0: #only send every seventh message and check if the first chunk is empty
+                    await bots_message.edit(content=message_string)
 
 @commands.command(name= "clear_chat", description= "Clears the chat history given to ChatGPT.")
 async def clear_chat(interaction):
