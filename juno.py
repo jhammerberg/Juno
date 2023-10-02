@@ -44,7 +44,7 @@ def get_functions():
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "info": {
+                    function_info["property_name"]: {
                         "type": "string",
                         "description": function_info["property_description"]
                     }
@@ -66,7 +66,8 @@ def complete_chat(message, client):
     if response.get("function_call"): #I copied this from the openai docs, I don't know how it works
         available_functions = {
             "get_time": get_time,
-            "create_image": create_image
+            "create_image": create_image,
+            "get_usage": get_usage
         }
         function_name = response["function_call"]["name"]
         function_to_call = available_functions[function_name]
@@ -120,14 +121,14 @@ def get_usage(date):
         generated_tokens = entry["n_generated_tokens_total"]
         cost += (context_tokens / 1000 * model_costs[model]["context"]) + (generated_tokens / 1000 * model_costs[model]["generated"])
         #The prices for the individual tokens can be configured in the config file, incase a new model is released. You can change the selected model at the top of the file.
-    return round(cost, 2)
+    return str(round(cost, 2))
 
 #Every 5 minutes, update the status to include the current api costs for today
 async def update_status():
     while True:
         current_usage = get_usage(datetime.utcnow().strftime("%Y-%m-%d")) #Must be UTC because that's what the API uses
-        print("Updating usage: " + str(current_usage))
-        await client.change_presence(activity=discord.Game(name="around | $" + str(current_usage)))
+        print("Updating usage: " + current_usage)
+        await client.change_presence(activity=discord.Game(name="around | $" + current_usage))
         await asyncio.sleep(300)
 
 @client.event

@@ -4,11 +4,18 @@
     "functions": {
         "get_time": {
             "description": "Returns the current time given a timezone",
+            "property_name": "timezone",
             "property_description": "The timezone to get the time from"
         },
         "create_image": {
             "description": "Creates an image given a prompt",
+            "property_name": "prompt",
             "property_description": "The plain text url for the generated image"
+        },
+        "get_usage": {
+            "description": "Returns the current usage of the AI in USD",
+            "property_name": "date",
+            "property_description": "Date to get the usage from (UTC - Year-month-day)"
         }
     },
     "model-costs": {
