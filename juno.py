@@ -1,6 +1,9 @@
+import asyncio
+import threading
 from discord import app_commands
 from dotenv import load_dotenv
 from datetime import datetime
+import requests
 import time
 import discord
 import openai
@@ -26,6 +29,10 @@ openai.api_key = openai_key
 client = discord.Client(intents=discord.Intents.all())
 commands = app_commands.CommandTree(client)
 previous_msgs = [{"role": "system", "content": system_prompt}]
+
+def sanitize_username(username): #openai needs the username to fit a certain format 
+    sanitized = re.sub(r"[^a-zA-Z0-9_-]", "", username)
+    return sanitized[:64]
 
 def get_functions():
     #procedurally generate the functions for the openai api
@@ -96,10 +103,6 @@ def create_image(prompt):
     print(json.dumps(image_url))
     return json.dumps(image_url)
 
-def sanitize_username(username): #openai needs the username to fit a certain format 
-    sanitized = re.sub(r"[^a-zA-Z0-9_-]", "", username)
-    return sanitized[:64]
-
 def get_time(timezone):
     #get current time in said timezone
     time = {
@@ -108,11 +111,25 @@ def get_time(timezone):
     }
     #return in json format
     return json.dumps(time)
-    
+
+def get_usage(date):
+    #get the USD usage of the bot from this month
+    usage = requests.get("https://api.openai.com/v1/usage", headers={"authorization": "Bearer " + openai_key} , params={"date": date})
+    return usage.json()["current_usage_usd"]
+
+#Every 5 minutes, update the status to include the current api costs for today
+async def update_status():
+    while True:
+        current_usage = get_usage(datetime.now().strftime("%Y-%m-%d"))
+        print("Updating usage: " + str(current_usage))
+        await client.change_presence(activity=discord.Game(name="around | $" + str(current_usage)))
+        await asyncio.sleep(300)
+        
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
-    await client.change_presence(activity=discord.Game(name="around"))
+    await update_status()
+    update_status()
     await commands.sync()
 
 @client.event
