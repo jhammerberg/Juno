@@ -1,19 +1,19 @@
+from discord import app_commands
+from dotenv import load_dotenv
 from datetime import datetime
 import time
 import discord
-from discord import app_commands
 import openai
 import pytz
 import re
 import json
-from dotenv import load_dotenv
 import os
 
 global system_prompt, previous_msgs
 with open("config.json", "r") as f:
     config = json.load(f)
 system_prompt = config["system-prompt"]
-functions = config["functions"]
+#functions = config["functions"]
 
 if not os.path.isfile(".env"): # Check if there's a .env file and throw an error if there isn't
     print("\033[91mERROR: No .env file found. Please create one with the keys 'DISCORD_KEY' and 'OPENAI_KEY'.\033[0m")
@@ -27,32 +27,25 @@ client = discord.Client(intents=discord.Intents.all())
 commands = app_commands.CommandTree(client)
 previous_msgs = [{"role": "system", "content": system_prompt}]
 
-def create_image(prompt):
-    #create an image from the prompt
-    image_url = openai.Image.create(
-        prompt=prompt,
-        n=1,
-        size="1024x1024"
-    )
-    
-    image = {
-        "image_url": image_url['data'][0]['url']
-    }
-    
-    return json.dumps(image)
-
-def sanitize_username(username): #openai needs the username to fit a certain format 
-    sanitized = re.sub(r"[^a-zA-Z0-9_-]", "", username)
-    return sanitized[:64]
-
-def get_time(timezone):
-    #get current time in said timezone
-    time = {
-        "timezone": timezone,
-        "time": datetime.now(pytz.timezone(timezone)).strftime("%m/%d/%Y %H:%M:%S")
-    }
-    #return in json format
-    return json.dumps(time)
+def get_functions():
+    #procedurally generate the functions for the openai api
+    functions = []
+    for function_name in config["functions"]:
+        function_info = config["functions"][function_name]
+        functions.append({
+            "name": function_name,
+            "description": function_info["description"],
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "info": {
+                        "type": "string",
+                        "description": function_info["property_description"]
+                    }
+                }
+            }
+        })
+    return functions
 
 def complete_chat(message, client):
     global previous_msgs
@@ -60,7 +53,7 @@ def complete_chat(message, client):
     completion = openai.ChatCompletion.create(
         model="gpt-4",
         messages=previous_msgs,
-        functions=functions,
+        functions=get_functions(),
         function_call="auto"
     )
     response = completion['choices'][0]['message'] #get the response from the json
@@ -88,6 +81,33 @@ def complete_chat(message, client):
         )
         return second_completion['choices'][0]['message']['content']
     return response['content'] #return the message inside the json
+
+def create_image(prompt):
+    #create an image from the prompt
+    image = openai.Image.create(
+        prompt=prompt,
+        n=1,
+        size="1024x1024"
+    )
+    
+    image_url = {
+        "image_url": image['data'][0]['url']
+    }
+    print(json.dumps(image_url))
+    return json.dumps(image_url)
+
+def sanitize_username(username): #openai needs the username to fit a certain format 
+    sanitized = re.sub(r"[^a-zA-Z0-9_-]", "", username)
+    return sanitized[:64]
+
+def get_time(timezone):
+    #get current time in said timezone
+    time = {
+        "timezone": timezone,
+        "time": datetime.now(pytz.timezone(timezone)).strftime("%m/%d/%Y %H:%M:%S")
+    }
+    #return in json format
+    return json.dumps(time)
     
 @client.event
 async def on_ready():
@@ -118,5 +138,4 @@ async def give_role(interaction: discord.Interaction, name: str):
     await interaction.response.send_message("Role Added")
 
 if __name__ == "__main__":
-    os.system("git pull")
     client.run(discord_key)
