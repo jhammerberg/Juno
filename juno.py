@@ -112,11 +112,9 @@ def get_time(timezone):
     return json.dumps(time)
 
 def get_usage(date):
+    cost = 0
     #get the USD usage of the bot from this month
     usage = requests.get("https://api.openai.com/v1/usage", headers={"authorization": "Bearer " + openai_key} , params={"date": date}).json()
-    #usage is a json object, the format can be found in the example usage json file. We need to itterate through the json to get the cost.
-    #the key "data" contains multiple entries for the day so we need to itterate through that as well.
-    cost = 0
     for entry in usage["data"]:
         context_tokens = entry["n_context_tokens_total"] #context tokens have a lower cost per token than generated tokens
         generated_tokens = entry["n_generated_tokens_total"]
@@ -127,14 +125,14 @@ def get_usage(date):
 #Every 5 minutes, update the status to include the current api costs for today
 async def update_status():
     while True:
-        current_usage = get_usage(datetime.now().strftime("%Y-%m-%d"))
+        current_usage = get_usage(datetime.utcnow().strftime("%Y-%m-%d")) #Must be UTC because that's what the API uses
         print("Updating usage: " + str(current_usage))
         await client.change_presence(activity=discord.Game(name="around | $" + str(current_usage)))
         await asyncio.sleep(300)
 
 @client.event
 async def on_ready():
-    print("We have logged in as " + str(client))
+    print("We have logged in as " + str(client.user))
     await update_status()
     await commands.sync()
 
