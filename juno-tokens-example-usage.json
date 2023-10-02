@@ -1,0 +1,115 @@
+{
+    "object": "list", 
+    "data": [{
+        "aggregation_timestamp": 1696205100, 
+        "n_requests": 2, 
+        "operation": "completion", 
+        "snapshot_id": "gpt-4-0613", 
+        "n_context": 2, 
+        "n_context_tokens_total": 1326, 
+        "n_generated": 2, 
+        "n_generated_tokens_total": 80
+    }, 
+    {
+        "aggregation_timestamp": 1696205400, 
+        "n_requests": 6, 
+        "operation": "completion", 
+        "snapshot_id": "gpt-4-0613", 
+        "n_context": 6, 
+        "n_context_tokens_total": 3374, 
+        "n_generated": 6, 
+        "n_generated_tokens_total": 160
+    }, 
+    {
+        "aggregation_timestamp": 1696206000, 
+        "n_requests": 1, 
+        "operation": "completion", 
+        "snapshot_id": "gpt-4-0613", 
+        "n_context": 1, 
+        "n_context_tokens_total": 584, 
+        "n_generated": 1, 
+        "n_generated_tokens_total": 45
+    }, {
+        "aggregation_timestamp": 1696206300, 
+        "n_requests": 3, 
+        "operation": "completion", 
+        "snapshot_id": "gpt-4-0613", 
+        "n_context": 3, 
+        "n_context_tokens_total": 3077, 
+        "n_generated": 3, 
+        "n_generated_tokens_total": 282
+    }, 
+    {
+        "aggregation_timestamp": 1696206600, 
+        "n_requests": 8, 
+        "operation": "completion",
+        "snapshot_id": "gpt-4-0613", 
+        "n_context": 8, 
+        "n_context_tokens_total": 7114, 
+        "n_generated": 8, 
+        "n_generated_tokens_total": 291
+    }, 
+    {
+        "aggregation_timestamp": 1696206900, 
+        "n_requests": 3, 
+        "operation": "completion", 
+        "snapshot_id": "gpt-4-0613", 
+        "n_context": 3, 
+        "n_context_tokens_total": 1886, 
+        "n_generated": 3, 
+        "n_generated_tokens_total": 171
+    }, 
+    {
+        "aggregation_timestamp": 1696207200, 
+        "n_requests": 4, 
+        "operation": "completion", 
+        "snapshot_id": "gpt-4-0613", 
+        "n_context": 4, 
+        "n_context_tokens_total": 2589, 
+        "n_generated": 4, 
+        "n_generated_tokens_total": 99
+    }, 
+    {
+        "aggregation_timestamp": 1696207500, 
+        "n_requests": 3, 
+        "operation": "completion", 
+        "snapshot_id": "gpt-4-0613", 
+        "n_context": 3, 
+        "n_context_tokens_total": 2100, 
+        "n_generated": 3, 
+        "n_generated_tokens_total": 129
+    }, 
+    {
+        "aggregation_timestamp": 1696207800, 
+        "n_requests": 1, 
+        "operation": "completion", 
+        "snapshot_id": "gpt-4-0613", 
+        "n_context": 1, 
+        "n_context_tokens_total": 697, 
+        "n_generated": 1, 
+        "n_generated_tokens_total": 76
+    }, 
+    {
+        "aggregation_timestamp": 1696256700, 
+        "n_requests": 1, 
+        "operation": "completion", 
+        "snapshot_id": "gpt-4-0613", 
+        "n_context": 1, 
+        "n_context_tokens_total": 396, 
+        "n_generated": 1, 
+        "n_generated_tokens_total": 36
+    }, 
+    {
+        "aggregation_timestamp": 1696257600, 
+        "n_requests": 1, 
+        "operation": "completion", 
+        "snapshot_id": "gpt-4-0613", 
+        "n_context": 1, 
+        "n_context_tokens_total": 374, 
+        "n_generated": 1, 
+        "n_generated_tokens_total": 21
+    }], 
+    "ft_data": [], 
+    "dalle_api_data": [], 
+    "whisper_api_data": [], 
+    "current_usage_usd": 0.0} 

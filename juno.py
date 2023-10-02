@@ -1,10 +1,8 @@
-import asyncio
-import threading
 from discord import app_commands
 from dotenv import load_dotenv
 from datetime import datetime
 import requests
-import time
+import asyncio
 import discord
 import openai
 import pytz
@@ -16,7 +14,8 @@ global system_prompt, previous_msgs
 with open("config.json", "r") as f:
     config = json.load(f)
 system_prompt = config["system-prompt"]
-#functions = config["functions"]
+model = config["model"]
+model_costs = config["model-costs"]
 
 if not os.path.isfile(".env"): # Check if there's a .env file and throw an error if there isn't
     print("\033[91mERROR: No .env file found. Please create one with the keys 'DISCORD_KEY' and 'OPENAI_KEY'.\033[0m")
@@ -58,7 +57,7 @@ def complete_chat(message, client):
     global previous_msgs
     previous_msgs.append({"role": "user", "name": sanitize_username(client), "content": message})
     completion = openai.ChatCompletion.create(
-        model="gpt-4",
+        model=model,
         messages=previous_msgs,
         functions=get_functions(),
         function_call="auto"
@@ -83,7 +82,7 @@ def complete_chat(message, client):
             }
         )
         second_completion = openai.ChatCompletion.create(
-            model="gpt-4",
+            model=model,
             messages=previous_msgs,
         )
         return second_completion['choices'][0]['message']['content']
@@ -114,8 +113,16 @@ def get_time(timezone):
 
 def get_usage(date):
     #get the USD usage of the bot from this month
-    usage = requests.get("https://api.openai.com/v1/usage", headers={"authorization": "Bearer " + openai_key} , params={"date": date})
-    return usage.json()["current_usage_usd"]
+    usage = requests.get("https://api.openai.com/v1/usage", headers={"authorization": "Bearer " + openai_key} , params={"date": date}).json()
+    #usage is a json object, the format can be found in the example usage json file. We need to itterate through the json to get the cost.
+    #the key "data" contains multiple entries for the day so we need to itterate through that as well.
+    cost = 0
+    for entry in usage["data"]:
+        context_tokens = entry["n_context_tokens_total"] #context tokens have a lower cost per token than generated tokens
+        generated_tokens = entry["n_generated_tokens_total"]
+        cost += (context_tokens / 1000 * model_costs[model]["context"]) + (generated_tokens / 1000 * model_costs[model]["generated"])
+        #The prices for the individual tokens can be configured in the config file, incase a new model is released. You can change the selected model at the top of the file.
+    return round(cost, 2)
 
 #Every 5 minutes, update the status to include the current api costs for today
 async def update_status():
@@ -124,12 +131,11 @@ async def update_status():
         print("Updating usage: " + str(current_usage))
         await client.change_presence(activity=discord.Game(name="around | $" + str(current_usage)))
         await asyncio.sleep(300)
-        
+
 @client.event
 async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
+    print("We have logged in as " + str(client))
     await update_status()
-    update_status()
     await commands.sync()
 
 @client.event
@@ -147,12 +153,14 @@ async def clear_chat(interaction):
     previous_msgs = [{"role": "system", "content": system_prompt}] 
     await interaction.response.send_message("Chat History Cleared")
 
+""" Totally not a command I added so I could promote myself in someone's server. Deprecated.
 @commands.command(name= "give_role", description= "Gives a specific role to whoever uses it.")
 async def give_role(interaction: discord.Interaction, name: str):
     server = client.get_guild(interaction.channel.guild.id)
     role = discord.utils.get(server.roles, name=name)
     await interaction.user.add_roles(role)
     await interaction.response.send_message("Role Added")
+""" #For some reason, the docs on how to do permissions and stuff on the latest version of the API suck so I'm leaving this here. 
 
 if __name__ == "__main__":
     client.run(discord_key)
