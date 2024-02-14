@@ -64,6 +64,6 @@ pip install llama-cpp-python
 6. Make and edit a `.env` file with your Discord Bot's credentials\
 *This is DIFFERENT than the Python virtual environment we made earlier, this is a seperate file to store sensitive information like keys*\
 It should be formatted like this:\
-`DISCORD_KEY="BOT TOKEN"`
+`DISCORD_KEY="BOT TOKEN"`\
 7. Run the start script for your OS\
 `start.sh` or `start.bat`
