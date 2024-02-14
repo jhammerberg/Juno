@@ -35,7 +35,7 @@ This project is still very much in the early stages of development, but for basi
     - Install Hugging Face modules\
     ```pip install --upgrade huggingface_hub```\
     ```pip install -U "huggingface_hub[cli]"```
-    - Download the model\
+    - Download the model
     ```bash
     huggingface-cli download TheBloke/dolphin-2.5-mixtral-8x7b-GGUF dolphin-2.5-mixtral-8x7b.Q4_K_M.gguf --local-dir . --local-dir-use-symlinks False
     ```
