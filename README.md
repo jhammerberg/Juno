@@ -1,3 +1,6 @@
+update, we're using this model:
+https://huggingface.co/TheBloke/dolphin-2.6-mistral-7B-GGUF
+
 # Introduction
 Juno is a large language model designed to be an open-source, multi-purpose general artificial intellegence platform.
 

@@ -66,9 +66,16 @@ def complete_chat(message, client):
         model=model,
         messages=previous_msgs,
         functions=get_functions(),
-        function_call="auto"
+        function_call="auto",
+        stream=True
     )
+    """
     response = completion['choices'][0]['message'] #get the response from the json
+    try:
+        response = next(completion).choices[0].delta #STREAM get the response from the json
+    except:
+        print(json.dumps(next(completion)))
+        response = completion['choices'][0]['message']
     if response.get("function_call"): #I copied this from the openai docs, I don't know how it works
         available_functions = {
             "get_time": get_time,
@@ -89,9 +96,11 @@ def complete_chat(message, client):
         second_completion = llm.create_chat_completion(
             model=model,
             messages=previous_msgs,
+            stream=True
         )
-        return second_completion['choices'][0]['message']['content']
-    return response['content'] #return the message inside the json
+        return second_completion
+        """
+    return completion
 
 def get_time(timezone):
     #get current time in said timezone
@@ -115,7 +124,18 @@ async def on_message(message):
 
     if 'juno' in message.content.lower():
         async with message.channel.typing(): #gives a typing indicator while the response is being generated
-            await message.channel.send(complete_chat(message.content, str(message.author)))
+            completion_object = complete_chat(message.content, str(message.author))
+            message_string = ""
+            bots_message = await message.channel.send("...") #Send a message to edit later
+            i = 0
+            for chunk in completion_object:
+                i=i+1 #using 'i' cause you can't use chunk since it's an "openaiobject" not an index
+                if "content" in chunk.choices[0].delta:
+                    message_string = message_string + chunk.choices[0].delta["content"]
+                else:
+                    return
+                if message_string != "" and i%10==0: #only send every seventh message and check if the first chunk is empty
+                    await bots_message.edit(content=message_string)
 
 @commands.command(name= "clear_chat", description= "Clears the chat history given to ChatGPT.")
 async def clear_chat(interaction):
