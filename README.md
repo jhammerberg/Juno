@@ -20,7 +20,7 @@ The main motivation for choosing this model in particular over something like Ll
 # Installation and usage
 This project is still very much in the early stages of development, but for basic environment setup, you will need to:
 1. Clone this (branch of the) repository, of course\
-```git clone --branch Mark-II https://github.com/jhammerberg/Juno```
+`git clone --branch Mark-II https://github.com/jhammerberg/Juno`
 2. Install Python ***3.11.8 64-bit*** and make an environment with it
     - You can have a newer or older version of Python still be your primary installation version if you want, because we will be making a seperate environment that will use specifically 3.11.8 64-Bit by specifying the version when we create it.
     - If you already have this version, check that it's the ***64-bit*** version because otherwise PyTorch won't be able to be installed, or even found.
@@ -29,45 +29,59 @@ This project is still very much in the early stages of development, but for basi
     - Run the activation file
         - Windows (PowerShell, as Admin):\
         Allow for file execution:\
-        ```set-executionpolicy remotesigned```\
+        `set-executionpolicy remotesigned`\
         Run the script:\
-        ```.\.juno-env/Scripts/Activate.ps1```
+        `.\.juno-env/Scripts/Activate.ps1`
         - Linux:\
-        ```source .juno-env/bin/activate```
+        `source .juno-env/bin/activate`
 4. Clone the Dolphin-2.5-Mixtral-8x7b-GGUF model from Huggingface 
     - Install Hugging Face modules\
-    ```pip install --upgrade huggingface_hub```\
-    ```pip install -U "huggingface_hub[cli]"```
+    `pip install --upgrade huggingface_hub`\
+    `pip install -U "huggingface_hub[cli]"`
     - Download the model
     ```bash
-    huggingface-cli download TheBloke/dolphin-2.5-mixtral-8x7b-GGUF dolphin-2.5-mixtral-8x7b.Q4_K_M.gguf --local-dir . --local-dir-use-symlinks False
+    huggingface-cli download TheBloke/dolphin-2.6-mistral-7B-GGUF dolphin-2.6-mistral-7b.Q5_K_M.gguf --local-dir . --local-dir-use-symlinks False
     ```
-    (This is like 25Gb so it'll take a while)
-5. Install required Dolphin-2.5 specific libraries
-(from the [Dolphin-2.5 install instructions](https://huggingface.co/TheBloke/dolphin-2.5-mixtral-8x7b-GGUF#first-install-the-package))
-```py
-# Base ctransformers with no GPU acceleration
-pip install llama-cpp-python
-# With NVidia CUDA acceleration
-CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python
-# Or with OpenBLAS acceleration
-CMAKE_ARGS="-DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=OpenBLAS" pip install llama-cpp-python
-# Or with CLBLast acceleration
-CMAKE_ARGS="-DLLAMA_CLBLAST=on" pip install llama-cpp-python
-# Or with AMD ROCm GPU acceleration (Linux only)
-CMAKE_ARGS="-DLLAMA_HIPBLAS=on" pip install llama-cpp-python
-# Or with Metal GPU acceleration for macOS systems only
-CMAKE_ARGS="-DLLAMA_METAL=on" pip install llama-cpp-python
+    (This is like 5.13Gb so it'll take a while)
+5. Install required llama-cpp-python library
+(from the [Dolphin-2.6 install instructions](https://huggingface.co/TheBloke/dolphin-2.6-mistral-7B-GGUF#first-install-the-package))
+- Download the CUDA Toolkit from [here](https://developer.nvidia.com/cuda-toolkit-archive) and install it\
+*This is optional, but inferencing (the time it takes to generate text) becomes much longer*\
+*You will also leave out the CMAKE_ARGS line while installing llama-cpp-python*
 
-# In windows, to set the variables CMAKE_ARGS in PowerShell, follow this format; eg for NVidia CUDA:
-$env:CMAKE_ARGS = "-DLLAMA_OPENBLAS=on"
-pip install llama-cpp-python
+Windows:
+```py
+$env:CMAKE_ARGS = "-DLLAMA_CUBLAS=on"
+$env:FORCE_CMAKE = 1
+pip install llama-cpp-python --upgrade --force-reinstall --no-cache-dir
 ```
-(I've only ever used the normal installation, without GPU acceleration, so tell me if others cause issues)
-6. Make and edit a `.env` file with your Discord Bot's credentials\
+---
+Linux:
+```bash
+CMAKE_ARGS="-DLLAMA_CUBLAS=on"
+FORCE_CMAKE = 1
+pip install llama-cpp-python --upgrade --force-reinstall --no-cache-dir
+```
+**At least on Windows, you will have to restart your computer in order for the environment variables to change and the next command to run properlly**
+- To see if your CUDA installation is working, run the following command:
+```bash
+python -c "import llama_cpp as llama; print(llama.cuda_version())"
+```
+6. (OPTIONAL) Make and edit a `.env` file with your Discord Bot's credentials\
 *This is DIFFERENT than the Python virtual environment we made earlier, this is a seperate file to store sensitive information like keys*\
 It should be formatted like this:\
-`DISCORD_KEY="BOT TOKEN"`\
-7. Run the start script for your OS\
-`start.sh` or `start.bat`
+`DISCORD_KEY="BOT TOKEN"`
+---
 ## Usage
+To run a basic version of Juno in the terminal run the following command:
+```bash
+python juno-cli.py
+```
+*This example is for Windows and has some special ANSI control characters to make the output look nice, so it may not work on Linux or MacOS. If you want to use it on those systems, you can remove the ANSI control characters from the `print` statements in `juno-cli.py`*
+
+---
+To run Juno as a **Discord Bot**, you will need to have a `.env` file with your Discord Bot's credentials, and then run the following command:
+```bash
+python juno-discord.py
+```
+*This has some libraries that you probably don't have, so install them if you have some errors*

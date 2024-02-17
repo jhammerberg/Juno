@@ -18,7 +18,7 @@ class Juno:
 
     if not self.verbose:
       print("\033[2J")
-      print("Initializing Llama...", end="\r")
+      print("Initializing...", end="\r")
 
     self.llm = Llama(
       model_path=self.model,
@@ -32,11 +32,9 @@ class Juno:
       print("Initialization complete.")
 
   def chat_stream(self, prompt, previous_msgs):
-    if previous_msgs is None or []:
-      previous_msgs = self.system_prompt
-      previous_msgs.append({"role": "user", "content": prompt})
-    else:
-      previous_msgs.append({"role": "user", "content": prompt})
+    if previous_msgs == []:
+      previous_msgs = [self.system_prompt]
+    previous_msgs.append({"role": "user", "content": prompt})
 
     stream = self.llm.create_chat_completion(
       model=self.model,
@@ -49,11 +47,9 @@ class Juno:
     return stream
 
   def chat_completion(self, prompt, previous_msgs):
-    if previous_msgs is None or []:
-      previous_msgs = self.system_prompt
-      previous_msgs.append({"role": "user", "content": prompt})
-    else:
-      previous_msgs.append({"role": "user", "content": prompt})
+    if previous_msgs == []:
+      previous_msgs = [self.system_prompt]
+    previous_msgs.append({"role": "user", "content": prompt})
 
     completion = self.llm.create_chat_completion(
       model=self.model,
