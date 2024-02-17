@@ -1,25 +1,25 @@
-update, we're using this model:
-https://huggingface.co/TheBloke/dolphin-2.6-mistral-7B-GGUF
-
 # Introduction
-Juno is a large language model designed to be an open-source, multi-purpose general artificial intellegence platform.
+Juno is a large language model designed to be an open-source, multi-purpose general artificial intelligence platform.
 
-Juno is an advanced API for the Dolphin-2.5-mixtral-8x7b-GGUF model with interfaces to allow for Discord integration, function calls, and long term memory through embeddings and vector databases (eventually)
+Juno is an advanced API for the Dolphin-2.6-mistral-7b.Q5_K_M.gguf model with interfaces to allow for Discord integration, function calls, and long-term memory through embeddings and vector databases (eventually).
+
+*Note: You can use other GGUF models with is project pretty easily, just change the 'model' key in the config.json*\
+*HOWEVER: Other models like [dolphin-2_6-phi-2](https://huggingface.co/cognitivecomputations/dolphin-2_6-phi-2*) which I think could work REALLY well for this project, use a different format and are untested.*
 
 This is version 2 of Juno, the first version which you can find [here](https://github.com/jhammerberg/Juno) is primarily just a discord bot with OpenAI API integration. While that API is awesome and very easy to develop with, it also costs money and has some major limitations.
 
-The goal for Juno Mk II is to be entirely free to run and use, while maintaining or even extending the capabilites of Juno Mk I. 
+The goal for Juno Mk II is to be entirely free to run and use, while maintaining or even extending the capabilities of Juno Mk I.
 
-As mentioned before, this new version of Juno is just an API at it's core, to add functionality and to simplify the Dolphin-2.5 open-source language model. The reason for this is not only to provide code modularity, but also to give the option to extend Juno past the limitations of a Discord bot through a web-interface later down the line. If you are a developer and want to use this as a reference, it also helps with that!
+As mentioned before, this new version of Juno is just an API at its core, to add functionality and to simplify the Dolphin-2.6 open-source language model. The reason for this is not only to provide code modularity but also to give the option to extend Juno past the limitations of a Discord bot through a web interface later down the line. If you are a developer and want to use this as a reference, it also helps with that!
 
-# Dolphin-2.5
-As mentioned before, this AI uses the Dolphin-2.5 model by "TheBloke" on Hugging Face as it's core. You may be able to change out this model for a different or newer one, but it may require modifications. Check out the great documentation [here](https://huggingface.co/TheBloke/dolphin-2.5-mixtral-8x7b-GGUF)!
+# Dolphin-2.6
+As mentioned before, this AI uses the Dolphin-2.6-mistral-7b.Q5_K_M.gguf model by "TheBloke" on Hugging Face as its core. You may be able to change out this model for a different or newer one, but it may require modifications. Check out the great documentation [here](https://huggingface.co/TheBloke/dolphin-2.6-mistral-7b.Q5_K_M.gguf)!
 
-The main motivation for choosing this model in particular over something like Llama-v2 is because of the uncensored nature of Dolphin-2.5 which is helpful, not only for getting over the annoying safeguards OpenAI and Meta introduce into their models, but it also increases the quality of the output, making this model somewhere between Llama and GPT-4. Oh, and of course it's free and open-source!
+The main motivation for choosing this model in particular over something like Llama-v2 is because of the uncensored nature of Dolphin-2.6, which is helpful, not only for getting over the annoying safeguards OpenAI and Meta introduce into their models, but it also increases the quality of the output, making this model somewhere between Llama and GPT-4. Oh, and of course, it's free and open-source!
 
 # Installation and usage
-This project is still very much in the early stages of development, but for basic environment set up you will need to:
-1. Clone this (branch of the) reposity of course\
+This project is still very much in the early stages of development, but for basic environment setup, you will need to:
+1. Clone this (branch of the) repository, of course\
 ```git clone --branch Mark-II https://github.com/jhammerberg/Juno```
 2. Install Python ***3.11.8 64-bit*** and make an environment with it
     - You can have a newer or older version of Python still be your primary installation version if you want, because we will be making a seperate environment that will use specifically 3.11.8 64-Bit by specifying the version when we create it.
@@ -70,3 +70,4 @@ It should be formatted like this:\
 `DISCORD_KEY="BOT TOKEN"`\
 7. Run the start script for your OS\
 `start.sh` or `start.bat`
+## Usage

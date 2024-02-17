@@ -1,49 +1,65 @@
 from llama_cpp import Llama
-import time
 import json
 
-with open("config.json", "r") as f:
-    config = json.load(f)
-system_prompt = config["system-prompt"]
-model = config["model"]
+class Juno:
+  def __init__(self, config_file="config.json", n_ctx=32768, n_threads=12, n_gpu_layers=200, llama_verbose=False, verbose=True):
+    self.n_ctx = n_ctx
+    self.n_threads = n_threads
+    self.n_gpu_layers = n_gpu_layers
+    self.llama_verbose = llama_verbose
+    self.verbose = verbose
 
-previous_msgs = [{"role": "system", "content": system_prompt}]
+    with open(config_file, "r") as f:
+      config = json.load(f)
+    
+    self.model = config["model"]
+    self.chat_tokens = config["max-tokens"]
+    self.system_prompt = ({"role": "system", "content": config["system-prompt"]})
 
-llm = Llama(
-  model_path=model,
-  n_ctx=32768,            # The max sequence length to use - note that longer sequence lengths require much more resources
-  n_threads=12,            # The number of CPU threads to use, tailor to your system and the resulting performance
-  n_gpu_layers=50,         # The number of layers to offload to GPU, if you have GPU acceleration available
-  verbose=False
-)
+    if not self.verbose:
+      print("\033[2J")
+      print("Initializing Llama...", end="\r")
 
-def chat(prompt):
-  global previous_msgs
-  previous_msgs.append({"role": "user", "content": prompt})
+    self.llm = Llama(
+      model_path=self.model,
+      n_ctx=self.n_ctx,
+      n_threads=self.n_threads,
+      n_gpu_layers=self.n_gpu_layers,
+      verbose=self.llama_verbose
+    )
 
-  stream = llm.create_chat_completion(
-    model=model,
-    messages = previous_msgs,
-    response_format = {"type": "json_object",},
-    max_tokens=512,
-    stream=True
-  )
-  return stream
+    if not self.verbose:
+      print("Initialization complete.")
 
-while True:
-  prompt = input("\033[32mPrompt:\033[0m ")
-  stream = chat(prompt)
-  output = ""
-  final_output = ""
-  print("\033[1A", end="\033[34m", flush=True)
-  for chunk in stream:
-    # The first and last chunks will not have useful output text, so we filter them with this if statement
-    if ('content') in (str(chunk['choices'][0]['delta'])):
-      final_output += chunk['choices'][0]['delta']['content']
-      output = chunk['choices'][0]['delta']['content']
-      # Print the output, one character at a time, adding to the same line.
-      for char in output:
-        print(char, end='', flush=True)
-        time.sleep(0.008)
-  previous_msgs.append({"role": "assistant", "content": final_output})
-  print("\033[0m")
+  def chat_stream(self, prompt, previous_msgs):
+    if previous_msgs is None or []:
+      previous_msgs = self.system_prompt
+      previous_msgs.append({"role": "user", "content": prompt})
+    else:
+      previous_msgs.append({"role": "user", "content": prompt})
+
+    stream = self.llm.create_chat_completion(
+      model=self.model,
+      messages=previous_msgs,
+      response_format={"type": "json_object"},
+      max_tokens=self.chat_tokens,
+      stream=True
+    )
+
+    return stream
+
+  def chat_completion(self, prompt, previous_msgs):
+    if previous_msgs is None or []:
+      previous_msgs = self.system_prompt
+      previous_msgs.append({"role": "user", "content": prompt})
+    else:
+      previous_msgs.append({"role": "user", "content": prompt})
+
+    completion = self.llm.create_chat_completion(
+      model=self.model,
+      messages=previous_msgs,
+      response_format={"type": "json_object"},
+      max_tokens=self.chat_tokens
+    )
+
+    return completion
