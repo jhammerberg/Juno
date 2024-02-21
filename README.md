@@ -4,7 +4,7 @@ Juno is a large language model designed to be an open-source, multi-purpose gene
 Juno is an advanced API for the Dolphin-2.6-mistral-7b.Q5_K_M.gguf model with interfaces to allow for Discord integration, function calls, and long-term memory through embeddings and vector databases (eventually).
 
 *Note: You can use other GGUF models with is project pretty easily, just change the 'model' key in the config.json*\
-*HOWEVER: Other models like [dolphin-2_6-phi-2](https://huggingface.co/cognitivecomputations/dolphin-2_6-phi-2*) which I think could work REALLY well for this project, use a different format and are untested.*
+*HOWEVER: Other models like [dolphin-2_6-phi-2](https://huggingface.co/cognitivecomputations/dolphin-2_6-phi-2) which I think could work REALLY well for this project, use a different format and are untested.*
 
 This is version 2 of Juno, the first version which you can find [here](https://github.com/jhammerberg/Juno) is primarily just a discord bot with OpenAI API integration. While that API is awesome and very easy to develop with, it also costs money and has some major limitations.
 
@@ -75,13 +75,13 @@ It should be formatted like this:\
 ## Usage
 To run a basic version of Juno in the terminal run the following command:
 ```bash
-python juno-cli.py
+python juno_cli.py
 ```
-*This example is for Windows and has some special ANSI control characters to make the output look nice, so it may not work on Linux or MacOS. If you want to use it on those systems, you can remove the ANSI control characters from the `print` statements in `juno-cli.py`*
+*This example is for Windows and has some special ANSI control characters to make the output look nice, so it may not work on Linux or MacOS. If you want to use it on those systems, you can remove the ANSI control characters from the `print` statements in `juno_cli.py`*
 
 ---
 To run Juno as a **Discord Bot**, you will need to have a `.env` file with your Discord Bot's credentials, and then run the following command:
 ```bash
-python juno-discord.py
+python juno_discord.py
 ```
 *This has some libraries that you probably don't have, so install them if you have some errors*

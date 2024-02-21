@@ -84,11 +84,11 @@ class Juno:
         print(f"No function call found.")
       return False
 
-  def chat_stream(self, previous_msgs, prompt=""):
+  def chat_stream(self, previous_msgs, prompt="", name="user"):
     if previous_msgs == []:
       previous_msgs = [self.system_prompt]
     if prompt != "": # This is so that we can call the completion function without a prompt, for example, when we want to call a function
-      previous_msgs.append({"role": "user", "content": prompt})
+      previous_msgs.append({"role": "user", "name": name, "content": prompt})
 
     stream = self.llm.create_chat_completion(
       model=self.model,
@@ -106,11 +106,11 @@ class Juno:
     else:
       return stream
 
-  def chat_completion(self, previous_msgs, prompt=""):
+  def chat_completion(self, previous_msgs, prompt="", name="user"):
     if previous_msgs == []:
       previous_msgs = [self.system_prompt]
     if prompt != "": # This is so that we can call the completion function without a prompt, for example, when we want to call a function
-      previous_msgs.append({"role": "user", "content": prompt})
+      previous_msgs.append({"role": "user", "name": name, "content": prompt})
 
     completion = self.llm.create_chat_completion(
       model=self.model,
