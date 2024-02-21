@@ -19,8 +19,8 @@ The main motivation for choosing this model in particular over something like Ll
 
 # Installation and usage
 This project is still very much in the early stages of development, but for basic environment setup, you will need to:
-1. Clone this (branch of the) repository, of course\
-`git clone --branch Mark-II https://github.com/jhammerberg/Juno`
+1. Clone this repository, of course\
+`git clone https://github.com/jhammerberg/Juno`
 2. Install Python ***3.11.8 64-bit*** and make an environment with it
     - You can have a newer or older version of Python still be your primary installation version if you want, because we will be making a seperate environment that will use specifically 3.11.8 64-Bit by specifying the version when we create it.
     - If you already have this version, check that it's the ***64-bit*** version because otherwise PyTorch won't be able to be installed, or even found.
