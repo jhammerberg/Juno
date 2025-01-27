@@ -27,5 +27,13 @@ or
 go run src/main.go
 ```
 
+## Planned features
+- YAML config file
+- Automatic model installation
+- Function calling
+- Vector database for long-term memory
+- Embedding usernames into AI calls
+- Voice recognition / voice-call integration
+
 ## License
 Feel free to use an modify this code as you see fit for any purpose. The only restriction is that you cannot claim the original code as your own. It would also be nice if you could credit me if you use this code in a project.

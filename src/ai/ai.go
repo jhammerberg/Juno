@@ -10,6 +10,7 @@ import (
 	"github.com/tmc/langchaingo/llms/ollama"
 )
 
+// global variables to preserve state
 var (
 	llm     llms.Model
 	ctx     context.Context
@@ -31,7 +32,11 @@ func Init() {
 	}
 	if history == nil {
 		history = []llms.MessageContent{
+			// This is the system prompt. Deepseek R-1 is a bit weird with system prompts
+			// though and I've found it works best when you add it to the context
+			// window as a message from the AI itself instead of an actual system prompt
 			llms.TextParts(llms.ChatMessageTypeAI, "<think> I am Juno, an artificial intelligence system created by the engineer Jack Hammerberg. I should respond as my creator intends by being witty, clever, and ocassionally sarcastic. I should always respond to myself in the first person and I should always think of myself as an artificial intellegence. </think>"),
+			// TODO: add this as part of the configuration
 		}
 	}
 }
