@@ -4,6 +4,15 @@ Juno is an AI platform or framework built on Ollama for deploying AI models for 
 
 ## Usage
 
+### Requirements
+
+- Go 1.23 or higher
+- The packages used (should be installed automatically when you build)
+- Ollama
+- A model that is compatible with Ollama
+    - Install Deepseek R-1 with `Ollama pull deepseek-r1`
+    - If you plan on using a model different than Deepseek R-1 you will need to modify the code slightly in `src/ai.go`
+
 ### Build and Run
 
 For the discord client example:
